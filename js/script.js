@@ -233,7 +233,7 @@ async function fetchImages(page = 1, query = '') {
   showLoader(true);
   let images = [];
   
-  // If Waifu.pics is selected, ignore query and fetch multiple random images.
+  // If Waifu.pics is selected, ignore query and fetch random images
   if (selectedApi === 'waifu') {
     const waifuEndpoints = [
       "https://api.waifu.pics/nsfw/waifu",
@@ -266,55 +266,18 @@ async function fetchImages(page = 1, query = '') {
     }
     return;
   }
-  
-  // For Rule34, Danbooru, Yande.re, Gelbooru:
+
+  // For other APIs (Rule34, Danbooru, Yande.re, Gelbooru):
   const encodedQuery = encodeURIComponent(enforceQueryLimit(query));
-  let url = "";
-  let apiKey = getNextApiKey(selectedApi); // may be empty
-  
-  if (selectedApi === 'rule34') {
-    url = query
-      ? `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags=${encodedQuery}&pid=${page - 1}`
-      : `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&pid=${page - 1}`;
-  } else if (selectedApi === 'danbooru') {
-    url = query
-    ? `https://danbooru.donmai.us/posts.json?tags=${encodedQuery}&page=${page}`
-    : `https://danbooru.donmai.us/posts.json?page=${page}`;  
-  } else if (selectedApi === 'yande') {
-    url = query
-      ? `https://yande.re/post.json?tags=${encodedQuery}&page=${page}`
-      : `https://yande.re/post.json?page=${page}`;
-  } else if (selectedApi === 'gelbooru') {
-    url = query
-      ? `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&page=${page}&tags=${encodedQuery}`
-      : `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&page=${page}`;
-  }
-  
-  console.log(`Fetching ${selectedApi} URL:`, url);
-  
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const response = await fetch(`/api/proxy?api=${selectedApi}&query=${encodedQuery}&page=${page}`);
     const data = await response.json();
     
-    if (selectedApi === 'danbooru' || selectedApi === 'yande' || selectedApi === 'gelbooru') {
-      if (data.length === 0) {
-        showToast('No images found for your search.');
-      } else {
-        images = data.map(function(img) { return normalizeImage(img); });
-      }
-    } else if (selectedApi === 'rule34') {
-      if (!data || data.length === 0) {
-        showToast('No images found for your search.');
-      } else {
-        images = data.map(function(img) { return normalizeImage(img); });
-      }
-    }
-    
+    images = data.map(function(img) { return normalizeImage(img); });
     await displayImages(images);
   } catch (error) {
-    console.error(`Error fetching images from ${selectedApi}:`, error);
-    showToast('Unable to load images right now. Please try again.');
+    console.error("Error fetching images from external API:", error);
+    showToast("Unable to load images right now. Please try again.");
   } finally {
     isFetching = false;
     showLoader(false);
