@@ -287,6 +287,54 @@ input:-webkit-autofill:active {
   font-size: 1.1rem;
   opacity: 0;
 }
+/* Modal container */
+.image-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.modal-content {
+  position: relative;
+}
+
+.modal-img {
+  max-width: 90%;
+  max-height: 80vh;
+  display: block;
+  margin: 0 auto;
+}
+
+.prev, .next {
+  position: absolute;
+  top: 50%;
+  font-size: 20px;
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10001;
+  transform: translateY(-50%);
+}
+
+.prev {
+  left: 10px;
+}
+
+.next {
+  right: 10px;
+}
+
+/* Hide the modal initially */
+.image-modal {
+  display: none;
+}
 
 /* Responsive adjustments */
 @media (max-width: 1200px) {

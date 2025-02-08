@@ -6,6 +6,7 @@ let currentPage = 1;
 let currentQuery = '';
 let isFetching = false;
 let pinnedImageData = null;
+let currentImageIndex = 0;
 
 const loader = document.getElementById('loader');
 const grid = document.getElementById('imageGrid');
@@ -39,104 +40,6 @@ if (apiSelect) {
     fetchImages(currentPage, currentQuery);
   });
 }
-
-// --- Autocomplete Setup ---
-const autoCompleteList = document.createElement('ul');
-autoCompleteList.id = "autocompleteList";
-autoCompleteList.style.position = "absolute";
-autoCompleteList.style.zIndex = "1000";
-autoCompleteList.style.listStyleType = "none";
-autoCompleteList.style.margin = "0";
-autoCompleteList.style.padding = "0";
-autoCompleteList.style.background = "#333";
-autoCompleteList.style.color = "#fff";
-document.body.appendChild(autoCompleteList);
-
-function debounce(func, delay) {
-  let timeout;
-  return function (...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => { func.apply(this, args); }, delay);
-  };
-}
-
-async function autocompleteHandler(query) {
-  if (!query) {
-    autoCompleteList.innerHTML = "";
-    return;
-  }
-  let url = "";
-  // Build URL for APIs that support tag search (Rule34, Danbooru, Yande.re, Gelbooru)
-  if (selectedApi === "rule34") {
-    url = `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&limit=10&tags=${encodeURIComponent(query)}`;
-  } else if (selectedApi === "danbooru") {
-    url = `https://danbooru.donmai.us/posts.json?tags=${encodeURIComponent(query)}&limit=10&page=1`;
-  } else if (selectedApi === "yande") {
-    url = `https://yande.re/post.json?tags=${encodeURIComponent(query)}&limit=10&page=1`;
-  } else {
-    autoCompleteList.innerHTML = "";
-    return;
-  }
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const posts = await response.json();
-    let suggestionsSet = new Set();
-    posts.forEach(function(post) {
-      let tagsStr = "";
-      if (selectedApi === "danbooru") {
-        tagsStr = post.tag_string || "";
-      } else if (selectedApi === "yande") {
-        tagsStr = post.tags || "";
-      } else {
-        tagsStr = post.tags || "";
-      }
-      tagsStr.split(" ").forEach(function(tag) {
-        if (tag.toLowerCase().startsWith(query.toLowerCase())) {
-          suggestionsSet.add(tag);
-        }
-      });
-    });
-    const suggestions = Array.from(suggestionsSet);
-    showAutocompleteSuggestions(suggestions);
-  } catch (error) {
-    console.error("Error fetching autocomplete suggestions:", error);
-  }
-}
-
-function showAutocompleteSuggestions(suggestions) {
-  const rect = searchInput.getBoundingClientRect();
-  autoCompleteList.style.top = `${rect.bottom + window.scrollY}px`;
-  autoCompleteList.style.left = `${rect.left + window.scrollX}px`;
-  autoCompleteList.style.width = `${rect.width}px`;
-  
-  autoCompleteList.innerHTML = "";
-  suggestions.forEach(function(suggestion) {
-    const li = document.createElement("li");
-    li.style.padding = "5px";
-    li.style.cursor = "pointer";
-    li.textContent = suggestion;
-    li.addEventListener("mousedown", function(e) {
-      e.preventDefault();
-      searchInput.value = suggestion;
-      autoCompleteList.innerHTML = "";
-    });
-    autoCompleteList.appendChild(li);
-  });
-}
-
-// Attach autocomplete event listener for APIs that support tag search
-searchInput.addEventListener("input", debounce(function(e) {
-  if (selectedApi === "rule34" || selectedApi === "danbooru" || selectedApi === "yande") {
-    autocompleteHandler(e.target.value.trim());
-  } else {
-    autoCompleteList.innerHTML = "";
-  }
-}, 300));
-
-searchInput.addEventListener("blur", function() {
-  setTimeout(function() { autoCompleteList.innerHTML = ""; }, 200);
-});
 
 // --- Helper Functions (unchanged) ---
 function showLoader(show) {
@@ -207,6 +110,13 @@ function normalizeImage(image) {
       full: image.file_url,
       tags: image.tags
     };
+  } else if (selectedApi === 'konachan') {
+    return {
+      id: image.id,
+      thumb: image.preview_url, // konachan returns preview_url
+      full: image.file_url,
+      tags: image.tags
+    };
   } else if (selectedApi === 'waifu') {
     return {
       id: Date.now() + Math.floor(Math.random() * 1000),
@@ -266,18 +176,51 @@ async function fetchImages(page = 1, query = '') {
     }
     return;
   }
-
-  // For other APIs (Rule34, Danbooru, Yande.re, Gelbooru):
+  
+  // For other APIs (Rule34, Danbooru, Yande.re, Gelbooru, Konachan):
   const encodedQuery = encodeURIComponent(enforceQueryLimit(query));
+  let url = "";
+  let apiKey = getNextApiKey(selectedApi); // may be empty
+  
+  // Modify the URL as needed for the APIs
+  if (selectedApi === 'rule34') {
+    url = query
+      ? `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags=${encodedQuery}&pid=${page - 1}`
+      : `https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&pid=${page - 1}`;
+  } else if (selectedApi === 'danbooru') {
+    url = query
+    ? `https://danbooru.donmai.us/posts.json?tags=${encodedQuery}&page=${page}`
+    : `https://danbooru.donmai.us/posts.json?page=${page}`;  
+  } else if (selectedApi === 'yande') {
+    url = query
+      ? `https://yande.re/post.json?tags=${encodedQuery}&page=${page}`
+      : `https://yande.re/post.json?page=${page}`;
+  } else if (selectedApi === 'gelbooru') {
+    url = query
+      ? `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&page=${page}&tags=${encodedQuery}`
+      : `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&page=${page}`;
+  } else if (selectedApi === 'konachan') {
+    url = query
+      ? `https://konachan.com/post.json?tags=${encodedQuery}&page=${page}`
+      : `https://konachan.com/post.json?page=${page}`;
+  }
+    
   try {
-    const response = await fetch(`/api/proxy?api=${selectedApi}&query=${encodedQuery}&page=${page}`);
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
     
-    images = data.map(function(img) { return normalizeImage(img); });
+    if (Array.isArray(data)) {
+      images = data.map(function(img) { return normalizeImage(img); });
+    } else {
+      console.error(`Expected an array, but received: ${typeof data}`);
+      showToast('No images found for your search.');
+    }
+    
     await displayImages(images);
   } catch (error) {
     console.error("Error fetching images from external API:", error);
-    showToast("Unable to load images right now. Please try again.");
+    showToast('Unable to load images right now. Please try again.');
   } finally {
     isFetching = false;
     showLoader(false);
@@ -300,25 +243,23 @@ function doSearch() {
 }
 
 // --- IMAGE DOWNLOAD ---
+// (Handle download functionality for images from all APIs)
+
 async function handleDownload(e, image) {
   e.stopPropagation();
   e.preventDefault();
   const imageUrl = image.full;
+  
   try {
-    const response = await fetch(imageUrl);
+    const response = await fetch(`/api/proxy?imageUrl=${encodeURIComponent(imageUrl)}`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
     const blob = await response.blob();
     const objectURL = URL.createObjectURL(blob);
     const tempLink = document.createElement("a");
     tempLink.href = objectURL;
-    
-    let extension = "jpg";
-    const urlParts = imageUrl.split(".");
-    if (urlParts.length > 1) {
-      extension = urlParts[urlParts.length - 1].split("?")[0];
-    }
-    
-    tempLink.download = `${selectedApi}-${image.id}.${extension}`;
-    
+    tempLink.download = `${image.id}.jpeg`;
+
     document.body.appendChild(tempLink);
     tempLink.click();
     document.body.removeChild(tempLink);
@@ -330,39 +271,9 @@ async function handleDownload(e, image) {
   }
 }
 
-// --- HYBRID FAVOURITES FUNCTIONALITY ---
-// (Note: When saving favorites from the main page, ensure each favorite includes a property "api" with the current selectedApi.)
-function handleFavourite(imageData) {
-  let favourites = JSON.parse(localStorage.getItem('favourites') || '[]');
-  const exists = favourites.some(function(fav) {
-    return fav.isFull ? fav.data.id === imageData.id : fav.id === imageData.id;
-  });
-  if (exists) {
-    showToast('Image is already in favourites.');
-    return;
-  }
-  let newFavourite;
-  if (favourites.length < 25) {
-    newFavourite = {
-      api: selectedApi,
-      isFull: true,
-      data: imageData
-    };
-  } else {
-    newFavourite = {
-      api: selectedApi,
-      isFull: false,
-      id: imageData.id,
-      thumb: imageData.thumb
-    };
-  }
-  favourites.push(newFavourite);
-  localStorage.setItem('favourites', JSON.stringify(favourites));
-  showToast('Image added to favourites!');
-}
 
 function handleImageClick(e, imageData, container) {
-  if (e.target.closest('.download-btn') || e.target.closest('.favourite-btn')) return;
+  if (e.target.closest('.download-btn')) return;
   pinnedImageData = imageData;
   let query = "";
   if (selectedApi === "rule34" || selectedApi === "danbooru" || selectedApi === "yande") {
@@ -421,20 +332,6 @@ function displayPinnedImage(image) {
     handleDownload(e, image);
   });
   container.appendChild(downloadLink);
-  
-  const favouriteBtn = document.createElement('button');
-  favouriteBtn.classList.add('favourite-btn');
-  favouriteBtn.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M18 6 6 18"/><path d="M6 6l12 12"/>
-    </svg>`;
-  favouriteBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    handleFavourite(image);
-  });
-  container.appendChild(favouriteBtn);
-  
-  grid.appendChild(container);
   gsap.from(container, { duration: 0.5, opacity: 0, scale: 0.95, ease: "back.out(1.7)" });
 }
 
@@ -469,19 +366,6 @@ async function displayImages(images) {
       handleDownload(e, image);
     });
     container.appendChild(downloadLink);
-    
-    const favouriteBtn = document.createElement('button');
-    favouriteBtn.classList.add('favourite-btn');
-    favouriteBtn.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-      </svg>`;
-    favouriteBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      handleFavourite(image);
-    });
-    container.appendChild(favouriteBtn);
-    
     container.addEventListener('click', function(e) {
       handleImageClick(e, image, container);
     });
