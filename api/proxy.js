@@ -18,10 +18,13 @@ export default async function handler(req, res) {
         if (!imageResponse.ok) {
           throw new Error('Failed to fetch image');
         }
-        
-        // Return the image blob
+  
+        // Get the content type from the response headers
+        const contentType = imageResponse.headers.get('Content-Type');
         const imageBlob = await imageResponse.blob();
-        res.setHeader('Content-Type', imageBlob.type);
+  
+        // Return the image blob with the correct Content-Type header
+        res.setHeader('Content-Type', contentType);
         res.status(200).send(imageBlob);
       } catch (error) {
         console.error("Error fetching image:", error);
@@ -53,7 +56,7 @@ export default async function handler(req, res) {
     } else if (api === 'gelbooru') {
       url = `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&page=${page}&tags=${encodeURIComponent(query)}`;
     } else if (api === 'konachan') {
-      url = `https://konachan.com/post.json?tags=${encodeURIComponent(query)}&page=${page}`;
+      url = `https://api.allorigins.win/get?url=https://konachan.com/post.json?tags=${encodeURIComponent(query)}&page=${page}`;
     }
   
     try {

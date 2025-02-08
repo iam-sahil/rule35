@@ -137,7 +137,6 @@ function normalizeImage(image) {
   }
 }
 
-// --- API FETCHING ---
 async function fetchImages(page = 1, query = '') {
   isFetching = true;
   showLoader(true);
@@ -201,16 +200,20 @@ async function fetchImages(page = 1, query = '') {
       : `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&page=${page}`;
   } else if (selectedApi === 'konachan') {
     url = query
-      ? `https://konachan.com/post.json?tags=${encodedQuery}&page=${page}`
-      : `https://konachan.com/post.json?page=${page}`;
+      ? `https://api.allorigins.win/get?url=https://konachan.com/post.json?tags=${encodedQuery}&page=${page}`
+      : `https://api.allorigins.win/get?url=https://konachan.com/post.json?page=${page}`;
   }
-    
+  
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
     
-    if (Array.isArray(data)) {
+    // Handle Konachan API (since it returns the JSON string inside the 'contents' field)
+    if (selectedApi === 'konachan') {
+      const parsedContents = JSON.parse(data.contents);  // Parse the contents string into an array
+      images = parsedContents.map(function(img) { return normalizeImage(img); });
+    } else if (Array.isArray(data)) {
       images = data.map(function(img) { return normalizeImage(img); });
     } else {
       console.error(`Expected an array, but received: ${typeof data}`);
@@ -226,6 +229,7 @@ async function fetchImages(page = 1, query = '') {
     showLoader(false);
   }
 }
+
 
 // --- SEARCH HANDLER ---
 function doSearch() {
