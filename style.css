@@ -157,94 +157,13 @@ input:-webkit-autofill:active {
   background: linear-gradient(to top, rgba(22, 22, 22, 0.75), rgba(0, 0, 0, 0));
   z-index: 50;
 }
-/* Favourite button on images (positioned at the top right of each image) */
-.favourite-btn {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-  padding: 5px 6px;
-  font-size: 0.5rem;
-  opacity: 0;
-  z-index: 10;
-  cursor: pointer;
-  transition: all .3s ease;
-}
-.favourite-btn:hover {
-  background-color: red;
-
-}
-
-.img-container:hover .favourite-btn {
-  opacity: 1;
-}
-
-
-.favourites-header {
-  position: sticky;
-  top: 0;
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  background-color: var(--back-color);
-  z-index: 100;
-}
-
-.back-home-btn {
-  background-color: rgba(0, 0, 0, 0.7);
-  color: var(--text-color);
-  border: 1px solid #f4f4f4;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  margin-right: auto;
-}
-
-.favourites-page-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: var(--text-color);
-  border: 1px solid #f4f4f4;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  z-index: 150;
-  cursor: pointer;
-}
-
-.img-container:hover .favourite-btn {
-  opacity: 1;
-}
-
-/* Back to Home button on favourites page (fixed at top left) */
-.back-home-btn {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: var(--text-color);
-  border: 1px solid #f4f4f4;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  z-index: 150;
-  cursor: pointer;
-}
 
 .image-grid {
   position: relative;
   z-index: 2;
-  margin-top: 2rem; /* Adjust as needed so images scroll over the title */
+  margin-top: 2rem; 
 }
 
-/* --- Rest of your CSS remains unchanged --- */
-
-/* Loader styling */
 .loader {
   display: none;
   text-align: center;
@@ -287,56 +206,115 @@ input:-webkit-autofill:active {
   font-size: 1.1rem;
   opacity: 0;
 }
-/* Modal container */
-.image-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10000;
-  background-color: rgba(0, 0, 0, 0.8);
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
+/* Updated Autocomplete list styling - Consistent with UI elements */
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(60% - 2px); /* Match input width, adjust borders */
+    border-radius: 0.25rem; /* Consistent border radius */
+    /* border: 1px solid #f4f4f4; */
+    border-top: none;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background like buttons/dropdown */
+    color: var(--subtext-color); /* Text color consistent with other elements */
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden; /* Clip rounded corners properly */
+    backdrop-filter: blur(10px); /* Optional: Apply blur if search/buttons use it */
+    z-index: 10; /* Ensure it's on top */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Slightly darker shadow for better definition */
 }
 
-.modal-content {
-  position: relative;
+.autocomplete-list li {
+    padding: 0.5rem 0.75rem; /* Consistent padding with input/buttons */
+    font-size: 1.25rem; /* Consistent font size */
+    cursor: pointer;
+    transition: background-color 0.2s ease; /* Smooth hover transition */
 }
 
-.modal-img {
-  max-width: 90%;
-  max-height: 80vh;
-  display: block;
-  margin: 0 auto;
+.autocomplete-list li:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Lighter background on hover for feedback */
 }
 
-.prev, .next {
-  position: absolute;
-  top: 50%;
-  font-size: 20px;
-  color: white;
-  background: transparent;
-  border: none;
+.autocomplete-list li + li {
+    border-top: 1px solid #f4f4f4; /* Optional: Add separators between list items */
+}
+
+/* Custom Dropdown Styling */
+.custom-dropdown {
+  position: fixed; /* To move it to the left side */
+  top: 20px; /* Adjust as needed */
+  left: 20px; /* Adjust as needed */
+  z-index: 150;
+  width: 200px; /* Adjust width as needed */
+}
+
+.dropdown-button {
+  border-radius: 0.25rem;
+  border: 1px solid #f4f4f4;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: var(--subtext-color);
+  padding: 0.5rem 0.75rem;
+  font-size: 1.25rem;
   cursor: pointer;
-  z-index: 10001;
-  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between; /* To align arrow to the right */
+  align-items: center;
+  backdrop-filter: blur(10px);
 }
 
-.prev {
-  left: 10px;
+.dropdown-arrow {
+  width: 20px;
+  height: 20px;
+  stroke: white; /* Arrow color */
 }
 
-.next {
-  right: 10px;
+.dropdown-list {
+  list-style-type: none;
+  padding: 0;
+  margin-top: .5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #f4f4f4;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: var(--subtext-color);
+  overflow: hidden; /* Clip rounded corners */
+  backdrop-filter: blur(10px);
+  display: none; /* Initially hidden */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  width: 400px; /* Increased width */
 }
 
-/* Hide the modal initially */
-.image-modal {
-  display: none;
+.dropdown-item {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-/* Responsive adjustments */
+.dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-item + .dropdown-item {
+  border-top: 1px solid #f4f4f4; /* Separator between items */
+}
+
+.item-title {
+  font-size: 1.25rem; /* Match button font size */
+  color: var(--text-color); /* Make title more prominent */
+}
+
+.item-subtext {
+  font-size: 0.9rem;
+  color: var(--subtext-color);
+  opacity: 0.8; /* Slightly faded subtext */
+}
+
+.dropdown-list.show {
+  display: block; /* Show list when 'show' class is added */
+}
+
 @media (max-width: 1200px) {
   .image-grid {
     column-count: 3;
@@ -357,11 +335,15 @@ input:-webkit-autofill:active {
   }
   .title {
     font-size: 6rem;
+    margin-inline: 4rem;
     letter-spacing: 2px;
   }
   .title-box {
     margin-top: 7rem;
   }
+  .dropdown-list {
+    width: 220px; /* Smaller width for screens below 800px */
+}
 }
 @media (max-width: 500px) {
   .image-grid {
@@ -372,7 +354,10 @@ input:-webkit-autofill:active {
   }
   .title {
     font-size: 5rem;
-    margin-inline: 8rem;
+    margin-inline: 4rem;
     letter-spacing: 2px;
   }
+  .dropdown-list {
+    width: 200px; /* Even smaller width for screens below 500px */
+}
 }
