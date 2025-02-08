@@ -248,8 +248,8 @@ function doSearch() {
 async function handleDownload(e, image) {
   e.stopPropagation();
   e.preventDefault();
-  const imageUrl = image.full;
-  
+  const imageUrl = image.full;  // This should be the direct URL to the image
+
   try {
     const response = await fetch(`/api/proxy?imageUrl=${encodeURIComponent(imageUrl)}`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -258,7 +258,7 @@ async function handleDownload(e, image) {
     const objectURL = URL.createObjectURL(blob);
     const tempLink = document.createElement("a");
     tempLink.href = objectURL;
-    tempLink.download = `${image.id}.jpeg`;
+    tempLink.download = `${image.id}.jpeg`;  // You can change the extension based on the file type
 
     document.body.appendChild(tempLink);
     tempLink.click();

@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-    const { api, query, page } = req.query; // Expect 'api', 'query', and 'page' parameters
+    const { api, query, page, imageUrl } = req.query; // Expect 'api', 'query', 'page', and 'imageUrl' parameters
   
     // Handle preflight CORS request (for browsers)
     if (req.method === 'OPTIONS') {
@@ -10,6 +10,25 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*'); // You can specify your frontend URL here instead of '*'
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+    // If imageUrl is provided, directly fetch the image and return it
+    if (imageUrl) {
+      try {
+        const imageResponse = await fetch(imageUrl);
+        if (!imageResponse.ok) {
+          throw new Error('Failed to fetch image');
+        }
+        
+        // Return the image blob
+        const imageBlob = await imageResponse.blob();
+        res.setHeader('Content-Type', imageBlob.type);
+        res.status(200).send(imageBlob);
+      } catch (error) {
+        console.error("Error fetching image:", error);
+        res.status(500).json({ error: 'Failed to fetch image from the source' });
+      }
+      return;
+    }
   
     // Check for required parameters
     if (!api || !query || !page) {
