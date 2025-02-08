@@ -107,19 +107,19 @@ function showLoader(show) {
 }
 
 function showToast(message) {
-    const toastContainer = document.getElementById('toastContainer');
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = message;
-    toastContainer.appendChild(toast);
-    gsap.to(toast, { opacity: 1, duration: 0.5 });
-    setTimeout(function() {
-        gsap.to(toast, {
-            opacity: 0,
-            duration: 0.5,
-            onComplete: function() { toastContainer.removeChild(toast); },
-        });
-    }, 2000);
+    const toastContainer = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+    gsap.to(toast, { opacity: 1, duration: 0.5 });
+    setTimeout(function() {
+        gsap.to(toast, {
+            opacity: 0,
+            duration: 0.5,
+            onComplete: function() { toastContainer.removeChild(toast); },
+        });
+    }, 2000);
 }
 
 function processTags(tags) {
@@ -583,10 +583,42 @@ window.addEventListener('click', function(event) {
         apiDropdownList.classList.remove('show');
     }
 });
+const initialTags = [
+    "ass",
+    "artwork",
+    "original",
+    "tagme",
+    "solo",
+    "1girl",
+    "cum",
+    "breasts",
+    "cleavage",
+    "nude",
+    "panties",
+    "pussy",
+    "barefoot",
+    "cameltoe",
+    "pantyhose",
+    "spread_legs",
+    "uncensored",
+    "dark_skin",
+    "stockings",
+    "pussy_juice",
+    "kneehighs",
+    "topless",
+    "anus"
+];
+
+function getRandomTag() {
+    const randomIndex = Math.floor(Math.random() * initialTags.length);
+    return initialTags[randomIndex];
+}
 document.addEventListener("DOMContentLoaded", function() {
     gsap.from(".title-box", { duration: 1, opacity: 0, y: -50, ease: "power2.out" });
     gsap.from(".image-grid", { duration: 1, opacity: 0, y: -20, ease: "power2.out", delay: 0.5 });
     gsap.from(".search-container", { duration: 1, opacity: 0, y: -20, ease: "power2.out", delay: 0.5 });
     typeWriter();
-    fetchImages(currentPage, "aesthetic pussy");
+    const initialQueryTag = getRandomTag();
+    fetchImages(currentPage, initialQueryTag);
+    showToast(`Loading initial images for tag: "${initialQueryTag}"`); // Optional toast to show initial tag
 });

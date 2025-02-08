@@ -328,6 +328,15 @@ input:-webkit-autofill:active {
     margin-inline: 8rem;
     letter-spacing: 2px;
   }
+  .title-box h2 {
+    font-size: 2.5rem;
+    letter-spacing: 5px;
+    font-family: "Pilowlava-Regular";
+  }
+  .title-box p {
+    font-size: 1.25rem;
+    letter-spacing: 2.5px;
+  }
 }
 @media (max-width: 800px) {
   .image-grid {
@@ -344,6 +353,15 @@ input:-webkit-autofill:active {
   .dropdown-list {
     width: 220px; /* Smaller width for screens below 800px */
 }
+.title-box h2 {
+  font-size: 2rem;
+  letter-spacing: 5px;
+  font-family: "Pilowlava-Regular";
+}
+.title-box p {
+  font-size: 1rem;
+  letter-spacing: 2.5px;
+}
 }
 @media (max-width: 500px) {
   .image-grid {
@@ -351,11 +369,20 @@ input:-webkit-autofill:active {
   }
   .title-box {
     margin-top: 8rem;
+    margin-inline: 2rem;
   }
   .title {
-    font-size: 5rem;
-    margin-inline: 4rem;
+    font-size: 4rem;
     letter-spacing: 2px;
+  }
+  .title-box h2 {
+    font-size: 2rem;
+    letter-spacing: 5px;
+    font-family: "Pilowlava-Regular";
+  }
+  .title-box p {
+    font-size: .75rem;
+    letter-spacing: 2.5px;
   }
   .dropdown-list {
     width: 200px; /* Even smaller width for screens below 500px */
