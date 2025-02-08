@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rule 35 | Search for anything</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon" />
+    <!-- GSAP & ScrollToPlugin (for smooth scrolling and animations) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+  </head>
+  <body>
+    <select id="apiSelect" class="api-select favourites-page-btn">
+      <option value="rule34" selected>Rule34</option>
+      <option value="waifu">Waifu</option>
+      <option value="danbooru">Danbooru</option>
+      <option value="yande">Yandere</option>
+      <option value="gelbooru">Gelbooru</option>
+    </select>
+    
+    <div class="title-box">
+      <h2>Welcome to</h2>
+      <h1 class="title">rule 35.</h1>
+      <p class="text">Search from several porn aggregators in one place</p>
+    </div>
+    <!-- Search Bar -->
+    <div class="search-container">
+      <input type="text" id="searchTerm" class="text" placeholder="" autocomplete="off" />
+      <button id="searchBtn" class="text"><span>Search</span></button>
+    </div>
+
+    <!-- Image Grid Container -->
+    <div class="image-grid" id="imageGrid"></div>
+    <!-- Loader (spinner) appended at the bottom of the grid -->
+    <div id="loader" class="loader"><div class="spinner"></div></div>
+    <!-- Sentinel for IntersectionObserver -->
+    <div class="sentinel" id="sentinel"></div>
+    <!-- Bottom Blur Overlay -->
+    <div class="bottom-blur"></div>
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script type="module" src="./js/apikeys.js"></script>
+    <script type="module" src="./js/script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,330 @@
+/* Custom fonts */
+@font-face {
+  font-family: "Pilowlava-Regular";
+  src: url(./assets/Pilowlava-Regular.woff2);
+}
+@font-face {
+  font-family: "Vercetti-Regular";
+  src: url(./assets/Vercetti-Regular.woff2);
+}
+
+:root {
+  --back-color: #111111;
+  --text-color: #f3f3f3;
+  --subtext-color: #f3f3f3;
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-color) var(--back-color);
+}
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: sans-serif;
+  background-color: var(--back-color);
+  color: var(--text-color);
+  scroll-behavior: smooth;
+  padding-inline: .125rem;
+}
+
+/* Title styling */
+.title-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10rem;
+}
+.title-box h2 {
+  font-size: 3rem;
+  letter-spacing: 5px;
+  font-family: "Pilowlava-Regular";
+}
+.title-box p {
+  font-size: 1.5rem;
+  letter-spacing: 2.5px;
+}
+.title {
+  font-size: 10rem;
+  letter-spacing: 10px;
+  font-family: "Pilowlava-Regular";
+}
+
+/* Text styling */
+.text {
+  font-family: "Vercetti-Regular";
+  color: var(--subtext-color);
+}
+
+/* Search container styling */
+.search-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  margin: 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.search-container input {
+  width: 35%;
+}
+
+.search-container input,
+.search-container button {
+  border-radius: 0.25rem;
+  border: 1px solid #f4f4f4;
+  background-color: transparent;
+  color: var(--subtext-color);
+  padding: 0.5rem 0.75rem;
+  font-size: 1.25rem;
+  backdrop-filter: blur(10px);
+}
+
+/* Autofill fix: prevent browser from changing background on autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+}
+#searchBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Masonry grid using CSS columns */
+.image-grid {
+  column-count: 4;
+  column-gap: 10px;
+  padding: 10px;
+}
+
+/* Container for each image and its download button */
+.img-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.img-container img {
+  width: 100%;
+  display: block;
+  border-radius: 4px;
+}
+
+/* Download button styling */
+.download-btn {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 3px;
+  font-size: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-decoration: none;
+  z-index: 10;
+}
+
+.img-container:hover .download-btn {
+  opacity: 1;
+}
+
+.sentinel {
+  height: 1px;
+}
+.bottom-blur {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(22, 22, 22, 0.75), rgba(0, 0, 0, 0));
+  z-index: 50;
+}
+/* Favourite button on images (positioned at the top right of each image) */
+.favourite-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 5px 6px;
+  font-size: 0.5rem;
+  opacity: 0;
+  z-index: 10;
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.favourite-btn:hover {
+  background-color: red;
+
+}
+
+.img-container:hover .favourite-btn {
+  opacity: 1;
+}
+
+
+.favourites-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--back-color);
+  z-index: 100;
+}
+
+.back-home-btn {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: var(--text-color);
+  border: 1px solid #f4f4f4;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  margin-right: auto;
+}
+
+.favourites-page-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: var(--text-color);
+  border: 1px solid #f4f4f4;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  z-index: 150;
+  cursor: pointer;
+}
+
+.img-container:hover .favourite-btn {
+  opacity: 1;
+}
+
+/* Back to Home button on favourites page (fixed at top left) */
+.back-home-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: var(--text-color);
+  border: 1px solid #f4f4f4;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  z-index: 150;
+  cursor: pointer;
+}
+
+.image-grid {
+  position: relative;
+  z-index: 2;
+  margin-top: 2rem; /* Adjust as needed so images scroll over the title */
+}
+
+/* --- Rest of your CSS remains unchanged --- */
+
+/* Loader styling */
+.loader {
+  display: none;
+  text-align: center;
+  padding: 20px;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid var(--text-color);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#toastContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 200;
+}
+
+.toast {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: var(--text-color);
+  border: 1px solid #f4f4f4;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border-radius: 0.25rem;
+  font-size: 1.1rem;
+  opacity: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .image-grid {
+    column-count: 3;
+  }
+
+  .title-box {
+    margin-top: 8rem;
+  }
+  .title {
+    font-size: 6rem;
+    margin-inline: 8rem;
+    letter-spacing: 2px;
+  }
+}
+@media (max-width: 800px) {
+  .image-grid {
+    column-count: 2;
+  }
+  .title {
+    font-size: 6rem;
+    letter-spacing: 2px;
+  }
+  .title-box {
+    margin-top: 7rem;
+  }
+}
+@media (max-width: 500px) {
+  .image-grid {
+    column-count: 1;
+  }
+  .title-box {
+    margin-top: 8rem;
+  }
+  .title {
+    font-size: 5rem;
+    margin-inline: 8rem;
+    letter-spacing: 2px;
+  }
+}
