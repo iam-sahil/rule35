@@ -51,7 +51,7 @@ export default async function handler(req, res) {
   }
 
   // Validate the 'api' parameter
-  const validApis = ["rule34", "danbooru", "yande", "gelbooru", "konachan"];
+  const validApis = ["rule34", "danbooru", "yande", "gelbooru"];
   if (!validApis.includes(api)) {
     return res.status(400).json({ error: "Invalid API selection" });
   }
@@ -75,10 +75,6 @@ export default async function handler(req, res) {
     url = `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&pid=${page}&tags=${encodeURIComponent(
       query
     )}`; // pid for page
-  } else if (api === "konachan") {
-    url = `https://konachan.com/post.json?tags=${encodeURIComponent(
-      query
-    )}&page=${page}`;
   }
 
   try {
@@ -92,7 +88,7 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     // If the data is not an array for expected APIs, return an error
-    if (api !== "gelbooru" && api !== "konachan" && !Array.isArray(data)) {
+    if (api !== "gelbooru" && !Array.isArray(data)) {
       // Adjust array check for APIs expecting arrays
       return res
         .status(500)
@@ -105,16 +101,6 @@ export default async function handler(req, res) {
           .status(500)
           .json({ error: `Gelbooru API response is not in expected format` });
       }
-    }
-    if (
-      api === "konachan" &&
-      typeof data !== "string" &&
-      !Array.isArray(data)
-    ) {
-      // Konachan might return string or array
-      return res.status(500).json({
-        error: `Konachan API response is not in expected format (string or array)`,
-      });
     }
 
     // Return the data back to the client

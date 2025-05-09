@@ -171,17 +171,9 @@ function normalizeImage(image) {
       tags: image.tag_string,
     };
   } else if (selectedApi === "yande") {
-    console.log("Yande.re normalizeImage input:", image); // <--- VERY IMPORTANT: IS THIS LINE PRESENT?
     return {
       id: image.id,
-      thumb: image.preview_url, // yande.re returns preview_url
-      full: image.file_url,
-      tags: image.tags,
-    };
-  } else if (selectedApi === "konachan") {
-    return {
-      id: image.id,
-      thumb: image.preview_url, // konachan returns preview_url
+      thumb: image.file_url,
       full: image.file_url,
       tags: image.tags,
     };
@@ -268,13 +260,8 @@ async function fetchImages(page = 1, query = "") {
     url = query
       ? `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&pid=${page}&tags=${encodedQuery}`
       : `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&pid=${page}`;
-  } else if (selectedApi === "konachan") {
-    url = query
-      ? `https://konachan.com/post.json?tags=${encodedQuery}&page=${page}`
-      : `https://konachan.com/post.json?page=${page}`;
-  } // --- Use proxy for APIs that may need it ---
-
-  const useProxy = ["yande", "gelbooru", "konachan"].includes(selectedApi);
+  }
+  const useProxy = ["yande", "gelbooru"].includes(selectedApi);
   const proxiedUrl = useProxy
     ? `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
     : url;
@@ -294,19 +281,7 @@ async function fetchImages(page = 1, query = "") {
       }
     } // Handle Konachan API (since it returns the JSON string inside the 'contents' field)
 
-    if (selectedApi === "konachan" && typeof data === "string") {
-      // Corrected condition
-      try {
-        const parsedContents = JSON.parse(data);
-        images = parsedContents.map(function (img) {
-          return normalizeImage(img);
-        });
-      } catch (e) {
-        console.error("Error parsing Konachan JSON:", e);
-        showToast("Failed to parse Konachan API response.");
-        return;
-      }
-    } else if (selectedApi === "gelbooru") {
+    if (selectedApi === "gelbooru") {
       if (data && data.post) {
         // Gelbooru wraps images in a 'post' array
         images = data.post.map(function (img) {
@@ -414,7 +389,7 @@ function handleImageClick(e, imageData, container) {
     numTags = 5; // Use 5 tags for Rule34
   } else if (selectedApi === "danbooru" || "gelbooru") {
     numTags = 2;
-  } else if (selectedApi === "yande" || selectedApi === "konachan") {
+  } else if (selectedApi === "yande") {
     numTags = 4;
   }
   // For Rule34, Danbooru, and Yandere, take the specified number of tags
@@ -422,7 +397,6 @@ function handleImageClick(e, imageData, container) {
   if (
     selectedApi === "rule34" ||
     selectedApi === "danbooru" ||
-    selectedApi === "konachan" ||
     selectedApi === "gelbooru" ||
     selectedApi === "yande"
   ) {
@@ -605,27 +579,31 @@ dropdownItems.forEach((item) => {
     apiDropdownList.classList.remove("show"); // Hide dropdown list after selection
 
     let lower = selectedApi.charAt(0).toUpperCase() + selectedApi.slice(1);
-    showToast(`Switched to ${lower} API`); // <--- showToast is called HERE, in script.js scope
 
-    // --- Disable/Enable Search Input (like before) ---
+    // --- Disable/Enable Search Input and set query based on API ---
     if (selectedApi === "waifu") {
       searchInput.disabled = true;
       searchBtn.disabled = true;
       searchInput.placeholder = "Search disabled for Waifu.pics";
       searchInput.style.opacity = "0.25";
       searchBtn.style.opacity = "0.25";
+      currentQuery = ""; // Waifu API does not use a search query
+      showToast(`Switched to ${lower} API. Fetching random images.`);
     } else {
       searchInput.disabled = false;
       searchBtn.disabled = false;
-      searchInput.placeholder = "";
+      currentQuery = getRandomTag(); // Get a new random tag for other APIs
+      searchInput.value = currentQuery; // Pre-fill search bar with the new random tag
+      searchInput.placeholder = "Searching for something new..."; // Reset placeholder
       searchInput.style.opacity = "1";
       searchBtn.style.opacity = "1";
+      showToast(`Switched to ${lower} API. Searching for: "${currentQuery}"`);
     }
 
     // --- Clear and refresh images (like before) ---
     currentPage = 1;
     grid.innerHTML = "";
-    fetchImages(currentPage, currentQuery);
+    fetchImages(currentPage, currentQuery); // fetchImages will use the updated currentQuery
   });
 });
 
@@ -638,7 +616,6 @@ window.addEventListener("click", function (event) {
 const initialTags = [
   "ass",
   "artwork",
-  "original",
   "tagme",
   "solo",
   "1girl",
@@ -659,8 +636,36 @@ const initialTags = [
   "kneehighs",
   "topless",
   "anus",
-  "ahegao",
+  "ahe_gao",
   "feet",
+  "footjob",
+  "fingering",
+  "female",
+  "feet_focus",
+  "female_only",
+  "bondage",
+  "big_breasts",
+  "blowjob",
+  "breast_squeeze",
+  "cum_in_pussy",
+  "cum_inside",
+  "sex",
+  "porn",
+  "nipples",
+  "thighs",
+  "underwear",
+  "lingerie",
+  "lewd",
+  "naughty",
+  "sexy",
+  "boobs",
+  "booty",
+  "creampie",
+  "doggy_style",
+  "facial",
+  "handjob",
+  "masturbation",
+  "oral_sex",
 ];
 
 function getRandomTag() {
