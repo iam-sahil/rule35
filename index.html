@@ -13,39 +13,60 @@
   <body>
     <div class="custom-dropdown" id="apiDropdownContainer">
       <div class="dropdown-button" id="apiDropdownButton">
-          Rule34
-          <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
+        Rule34
+        <svg
+          class="dropdown-arrow"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
       </div>
       <ul class="dropdown-list" id="apiDropdownList">
-          <li class="dropdown-item" data-value="rule34">
-              <div class="item-title">Rule34</div>
-              <div class="item-subtext">★ Best for rule 34 content. Autocomplete available.</div>
-          </li>
-          <li class="dropdown-item" data-value="waifu">
-              <div class="item-title">Waifu</div>
-              <div class="item-subtext">★ SFW & NSFW waifu images. Random only, no search.</div>
-          </li>
-          <li class="dropdown-item" data-value="danbooru">
-              <div class="item-title">Danbooru</div>
-              <div class="item-subtext">★ General anime image board. Search supported.</div>
-          </li>
-          <li class="dropdown-item" data-value="gelbooru">
-              <div class="item-title">Gelbooru</div>
-              <div class="item-subtext">— Popular image board. Search supported.</div>
-          </li>
-          <li class="dropdown-item" data-value="konachan">
-              <div class="item-title">Konachan</div>
-              <div class="item-subtext">— High-quality anime images. Unstable rendering.</div>
-          </li>
-          <li class="dropdown-item" data-value="yande">
-              <div class="item-title">Yandere</div>
-              <div class="item-subtext">— Anime image board. Potential connection issues.</div>
-          </li>
+        <li class="dropdown-item" data-value="rule34">
+          <div class="item-title">Rule34</div>
+          <div class="item-subtext">
+            ★ Best for rule 34 content. Autocomplete available.
+          </div>
+        </li>
+        <li class="dropdown-item" data-value="waifu">
+          <div class="item-title">Waifu</div>
+          <div class="item-subtext">
+            ★ SFW & NSFW waifu images. Random only, no search.
+          </div>
+        </li>
+        <li class="dropdown-item" data-value="danbooru">
+          <div class="item-title">Danbooru</div>
+          <div class="item-subtext">
+            ★ General anime image board. Search supported.
+          </div>
+        </li>
+        <li class="dropdown-item" data-value="gelbooru">
+          <div class="item-title">Gelbooru</div>
+          <div class="item-subtext">
+            — Popular image board. Search supported.
+          </div>
+        </li>
+        <li class="dropdown-item" data-value="konachan">
+          <div class="item-title">Konachan</div>
+          <div class="item-subtext">
+            — High-quality anime images. Unstable rendering.
+          </div>
+        </li>
+        <li class="dropdown-item" data-value="yande">
+          <div class="item-title">Yandere</div>
+          <div class="item-subtext">
+            — Anime image board. Potential connection issues.
+          </div>
+        </li>
       </ul>
-  </div>
-    
+    </div>
+
     <div class="title-box">
       <h2>Welcome to</h2>
       <h1 class="title">rule 35.</h1>
@@ -53,8 +74,9 @@
     </div>
     <!-- Search Bar -->
     <div class="search-container">
-      <input type="text" autocomplete="off" id="searchTerm">
-      <ul id="autocompleteList" class="autocomplete-list"></ul> <button id="searchBtn">Search</button>
+      <input type="text" autocomplete="off" id="searchTerm" />
+      <ul id="autocompleteList" class="autocomplete-list"></ul>
+      <button id="searchBtn">Search</button>
     </div>
 
     <!-- Image Grid Container -->
@@ -68,7 +90,6 @@
     <!-- Toast Container -->
     <div id="toastContainer"></div>
 
-    <script type="module" src="./js/apikeys.js"></script>
-    <script type="module" src="./js/script.js"></script>
+    <script type="module" src="script.js"></script>
   </body>
 </html>
