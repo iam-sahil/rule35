@@ -170,13 +170,6 @@ function normalizeImage(image) {
       full: image.file_url || image.preview_file_url, // fallback if file_url is undefined
       tags: image.tag_string,
     };
-  } else if (selectedApi === "yande") {
-    return {
-      id: image.id,
-      thumb: image.file_url,
-      full: image.file_url,
-      tags: image.tags,
-    };
   } else if (selectedApi === "waifu") {
     return {
       id: Date.now() + Math.floor(Math.random() * 1000),
@@ -234,7 +227,7 @@ async function fetchImages(page = 1, query = "") {
       showLoader(false);
     }
     return;
-  } // For other APIs (Rule34, Danbooru, Yande.re, Gelbooru, Konachan):
+  } // For other APIs (Rule34, Danbooru, Gelbooru, Konachan):
 
   const encodedQuery = encodeURIComponent(enforceQueryLimit(query));
   let url = "";
@@ -252,16 +245,12 @@ async function fetchImages(page = 1, query = "") {
     url = query
       ? `https://danbooru.donmai.us/posts.json?tags=${encodedQuery}&page=${page}`
       : `https://danbooru.donmai.us/posts.json?page=${page}`;
-  } else if (selectedApi === "yande") {
-    url = query
-      ? `https://yande.re/post.json?tags=${encodedQuery}&page=${page}`
-      : `https://yande.re/post.json?page=${page}`;
   } else if (selectedApi === "gelbooru") {
     url = query
       ? `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&pid=${page}&tags=${encodedQuery}`
       : `https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=50&pid=${page}`;
   }
-  const useProxy = ["yande", "gelbooru"].includes(selectedApi);
+  const useProxy = ["gelbooru"].includes(selectedApi);
   const proxiedUrl = useProxy
     ? `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`
     : url;
@@ -383,22 +372,19 @@ function handleImageClick(e, imageData, container) {
   if (e.target.closest(".download-btn")) return;
   pinnedImageData = imageData;
   let query = "";
-  let numTags = 2; // Default number of tags for Danbooru and Yandere
+  let numTags = 2; // Default number of tags for Danbooru
 
   if (selectedApi === "rule34") {
     numTags = 5; // Use 5 tags for Rule34
   } else if (selectedApi === "danbooru" || "gelbooru") {
     numTags = 2;
-  } else if (selectedApi === "yande") {
-    numTags = 4;
   }
-  // For Rule34, Danbooru, and Yandere, take the specified number of tags
+  // For Rule34, Danbooru, and Gelbooru, take the specified number of tags
   // and filter out any tag that contains a colon (or any unwanted character)
   if (
     selectedApi === "rule34" ||
     selectedApi === "danbooru" ||
-    selectedApi === "gelbooru" ||
-    selectedApi === "yande"
+    selectedApi === "gelbooru"
   ) {
     let tagsArray = imageData.tags
       .split(" ")
@@ -434,6 +420,7 @@ function displayPinnedImage(image) {
   });
 
   const img = document.createElement("img");
+  // Load the full image URL directly for the pinned image display
   img.src = image.full;
   img.alt = image.tags;
   container.appendChild(img);
@@ -472,9 +459,39 @@ async function displayImages(images) {
     container.setAttribute("aria-label", "Click to search for similar images");
 
     const img = document.createElement("img");
-    img.src = selectedApi === "yande" ? image.thumb : image.full || image.thumb;
+    // Initially, set src to the thumbnail or sample or full (direct links)
+    img.src = image.thumb || image.sample || image.full || "";
     img.alt = image.tags;
+    img.classList.add("thumbnail-loading"); // Add a class for potential styling
+
     container.appendChild(img);
+
+    // After the thumbnail is potentially loaded, start loading the full image
+    if (image.full && image.full !== img.src) {
+      // Only load full if it's different and exists
+      const fullImage = new Image();
+      fullImage.src = image.full; // Load full image directly
+      fullImage.onload = () => {
+        // Smoothly transition to the full image
+        gsap.to(img, {
+          opacity: 0.9,
+          duration: 0.3,
+          onComplete: () => {
+            img.src = fullImage.src;
+            img.classList.remove("thumbnail-loading");
+            img.classList.add("full-image-loaded"); // Add a class for potential styling
+            gsap.to(img, { opacity: 1, duration: 0.3 });
+          },
+        });
+      };
+      fullImage.onerror = () => {
+        img.classList.remove("thumbnail-loading");
+        // Optionally, handle full image load error, e.g., by leaving thumbnail or showing a placeholder
+        console.warn(`Failed to load full image directly: ${image.full}`);
+      };
+    } else {
+      img.classList.remove("thumbnail-loading"); // No full image to load or it's same as thumb
+    }
 
     const downloadLink = document.createElement("a");
     downloadLink.classList.add("download-btn");

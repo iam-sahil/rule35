@@ -51,7 +51,7 @@ export default async function handler(req, res) {
   }
 
   // Validate the 'api' parameter
-  const validApis = ["rule34", "danbooru", "yande", "gelbooru"];
+  const validApis = ["rule34", "danbooru", "gelbooru"];
   if (!validApis.includes(api)) {
     return res.status(400).json({ error: "Invalid API selection" });
   }
@@ -65,10 +65,6 @@ export default async function handler(req, res) {
     )}&pid=${page - 1}`;
   } else if (api === "danbooru") {
     url = `https://danbooru.donmai.us/posts.json?tags=${encodeURIComponent(
-      query
-    )}&page=${page}`;
-  } else if (api === "yande") {
-    url = `https://yande.re/post.json?tags=${encodeURIComponent(
       query
     )}&page=${page}`;
   } else if (api === "gelbooru") {
